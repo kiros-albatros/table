@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
 
 const StyledDetail = styled.div`
 	width: 80%;
@@ -13,11 +14,14 @@ const StyledTitle = styled.h1`
 
 const StoreDetail = () => {
 	let { id } = useParams();
-	const [storeDetail, setStoreDetail] = useState({});
+	//const [storeDetail, setStoreDetail] = useState({});
+	const dispatch = useDispatch();
+	const storeDetail = useSelector((state) => state.storeDetail);
 	useEffect(() => {
 		const getStore = async () => {
 			const storeFromServer = await fetchStore();
-			setStoreDetail(storeFromServer);
+			dispatch({ type: "DETAIL_STORE", payload: storeFromServer });
+			//setStoreDetail(storeFromServer);
 			console.log(storeFromServer);
 		};
 		getStore();
@@ -30,13 +34,16 @@ const StoreDetail = () => {
 		return data;
 	};
 
+	let address = "";
+
 	for (let key in storeDetail) {
 		if (storeDetail.hasOwnProperty(key)) {
 			console.log(`${key} : ${storeDetail[key]}`);
+			if (key === "address") {
+				address = storeDetail["address"];
+			}
 		}
 	}
-
-	//console.log(storeDetail.address.address);
 
 	return (
 		<StyledDetail>
@@ -44,6 +51,7 @@ const StoreDetail = () => {
 			<div>
 				<p>id: {storeDetail.id}</p>
 				<p>Название: {storeDetail.name}</p>
+				<p>Адрес: {address["address"]}</p>
 			</div>
 		</StyledDetail>
 	);

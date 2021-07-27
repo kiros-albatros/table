@@ -1,7 +1,8 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Stores from "./Stores.jsx";
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
 
 const StyledTable = styled.div`
 	text-align: center;
@@ -11,12 +12,15 @@ const StyledTable = styled.div`
 `;
 
 const Table = () => {
-	const [stores, setStores] = useState([]);
+	//const [stores, setStores] = useState([]);
+	const dispatch = useDispatch();
+	const stores = useSelector((state) => state.stores);
 
 	useEffect(() => {
 		const getStores = async () => {
 			const storesFromServer = await fetchStores();
-			setStores(storesFromServer);
+			dispatch({ type: "GET_STORES", payload: storesFromServer });
+			//	setStores(storesFromServer);
 		};
 		getStores();
 	}, []);
@@ -33,7 +37,8 @@ const Table = () => {
 		await fetch(`http://localhost:5000/stores/${id}`, {
 			method: "DELETE",
 		});
-		setStores(stores.filter((store) => store.id !== id));
+		const filteredStores = stores.filter((store) => store.id !== id);
+		dispatch({ type: "DELETE_STORE", payload: filteredStores });
 	};
 	return (
 		<StyledTable>
